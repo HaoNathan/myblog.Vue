@@ -9,7 +9,7 @@
               <Input
                 prefix="ios-contact"
                 style="width: auto"
-                :disabled="switch1"
+                :disabled="inputDisable"
                 placeholder="您的昵称"
                 v-model="formItem.name"
               />
@@ -19,7 +19,7 @@
                 prefix="ios-contact"
                 placeholder="您的联系方式"
                 style="width: auto"
-                :disabled="switch1"
+                :disabled="inputDisable"
                 v-model="formItem.contact"
               />
             </FormItem>
@@ -69,6 +69,8 @@ export default {
   components: { childHeader },
   data: () => ({
     switch1: false,
+    inputDisable: false,
+    user: "",
     formItem: {
       name: "",
       contact: "",
@@ -101,8 +103,20 @@ export default {
   }),
   async created() {
     await this.GetLeaveMeassage();
+    this.GetUser();
   },
   methods: {
+    GetUser() {
+      if (localStorage.getItem("user")) {
+        const sessionObj = localStorage.getItem("user");
+        this.user = JSON.parse(sessionObj);
+        this.formItem.name = this.user.name;
+        this.formItem.contact = this.user.contact;
+        this.ruleValidate.name[0].required = false;
+        this.ruleValidate.contact[0].required = false;
+        this.inputDisable = true;
+      }
+    },
     async GetLeaveMeassage() {
       await axios
         .get("api/leaveMessage?isAll=true")
@@ -119,11 +133,15 @@ export default {
         this.ruleValidate.contact[0].required = false;
         this.formItem.name = "";
         this.formItem.contact = "";
+        this.inputDisable = true;
       } else {
         this.ruleValidate.name[0].required = true;
         this.ruleValidate.contact[0].required = true;
+
+        this.inputDisable = false;
       }
     },
+    //86400
     removeT(time) {
       return this.removeTFromTime(time);
     },
@@ -133,7 +151,29 @@ export default {
           if (this.formItem.name == "") {
             this.formItem.name = "游客" + new Date().getTime();
             this.formItem.contact = "未填写";
+            if (localStorage.getItem("user")) {
+              localStorage.removeItem("user");
+            }
           }
+          if (localStorage.getItem("user")) {
+            const localObj = localStorage.getItem("user");
+            const user = JSON.parse(localObj);
+            if (user.commentNum == 0) {
+              this.$Message.success("每天仅可留言3次!");
+              return;
+            }
+            user.commentNum = user.commentNum - 1;
+            const jsonUser = JSON.stringify(user);
+            localStorage.setItem("user", jsonUser);
+          } else {
+            const jsonValue = JSON.stringify({
+              name: this.formItem.name,
+              contact: this.formItem.contact,
+              commentNum: 2,
+            });
+            localStorage.setItem("user", jsonValue);
+          }
+
           axios
             .post("api/leaveMessage", {
               UserName: this.formItem.name,
@@ -147,13 +187,13 @@ export default {
                   res.data.createTime
                 ).substring(0, 19);
                 this.messages.unshift({
-                  userName: comment.userName,
-                  message: comment.message,
-                  createTime: time,
+                  UserName: comment.userName,
+                  Message: comment.message,
+                  CreateTime: time,
                 });
                 this.$Message.success("评论成功!");
 
-                this.$refs[name].resetFields();
+                // this.$refs[name].resetFields();
               } else {
                 this.$Message.error("您的数据有误!");
               }

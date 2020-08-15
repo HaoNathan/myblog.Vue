@@ -23,7 +23,19 @@ export default new Vuex.Store({
         console.log(err);
       })
       return data;
-    }
+    },
+    async GetCategories(state) {
+      let data = "";
+      await axios
+        .get("api/articleCategory?isRemove=false")
+        .then((res) => {
+          data = res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return data;
+    },
   },
   modules: {
 

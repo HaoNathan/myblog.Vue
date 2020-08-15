@@ -32,7 +32,7 @@
       </Row>
     </Affix>
     <Drawer title="Menu" :closable="true" v-model="value1">
-      <Tabs size="small">
+      <Tabs size="small" @on-click="tabChange">
         <TabPane label="About Me">
           <Card style="width:100%">
             <div style="text-align:center">
@@ -52,83 +52,22 @@
           </Card>
         </TabPane>
         <TabPane label="分类">
-          <Card :style="{width:'100%',marginTop:'20px'}" :shadow="hasShadow">
+          <Card :style="{width:'100%'}" :shadow="hasShadow">
             <p slot="title">分类</p>
-            <Collapse simple :accordion="hasShadow">
-              <Panel name="1">
-                C#
-                <div slot="content">
-                  <List size="small">
-                    <ListItem>
-                      <router-link to="/about">This is a piece of text.</router-link>
-                    </ListItem>
-                    <ListItem>This is a piece of text.</ListItem>
-                    <ListItem>This is a piece of text.</ListItem>
-                  </List>
-                </div>
-              </Panel>
-              <Panel name="2">
-                .Net
-                <div slot="content">
-                  <List size="small">
-                    <ListItem>This is a piece of text.</ListItem>
-                    <ListItem>This is a piece of text.</ListItem>
-                    <ListItem>This is a piece of text.</ListItem>
-                  </List>
-                </div>
-              </Panel>
-              <Panel name="3">
-                .NetCore
-                <div slot="content">
-                  <List size="small">
-                    <ListItem>This is a piece of text.</ListItem>
-                    <ListItem>This is a piece of text.</ListItem>
-                    <ListItem>This is a piece of text.</ListItem>
-                  </List>
-                </div>
-              </Panel>
-              <Panel name="4">
-                Web前端
-                <div slot="content">
-                  <List size="small">
-                    <ListItem>This is a piece of text.</ListItem>
-                    <ListItem>This is a piece of text.</ListItem>
-                    <ListItem>This is a piece of text.</ListItem>
-                  </List>
-                </div>
-              </Panel>
-            </Collapse>
+            <CellGroup @on-click="selestArticle">
+              <Cell v-for="item in categories" :title="item.categoryName" :name="item.categoryId" />
+            </CellGroup>
           </Card>
         </TabPane>
         <TabPane label="最近">
-          <Card style="width:100%" dis-hover>
+          <Card :style="{width:'100%',marginTop:'20px'}" :shadow="hasShadow">
+            <p slot="title">最近</p>
             <Timeline>
-              <TimelineItem>
-                <p class="time">1976年</p>
-                <p class="content">Apple I 问世</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="time">1984年</p>
-                <p class="content">发布 Macintosh</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="time">2007年</p>
-                <p class="content">发布 iPhone</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="time">2010年</p>
-                <p class="content">发布 iPad</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="time">2011年10月5日</p>
-                <p class="content">史蒂夫·乔布斯去世</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="time">2007年</p>
-                <p class="content">发布 iPhone</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="content">钢铁视图和炼成的</p>
+              <TimelineItem v-for="item in newsList">
+                <p class="time">
+                  <Time :time="item.CreateTime" />
+                </p>
+                <p class="content" @click="getArticle(item.Id)">{{item.Title}}</p>
               </TimelineItem>
             </Timeline>
           </Card>
@@ -138,19 +77,38 @@
   </div>
 </template>
 <script>
+import { mapActions } from "vuex";
 export default {
   data: () => ({
     value1: false,
     hasShadow: true,
+    categories: "",
+    newsList: "",
     photoSrc: require("../assets/backiee-169407.jpg"),
   }),
   methods: {
+    ...mapActions(["QueryNewsArticle", "GetCategories"]),
     search(value) {
       if (this.$route.path == "/articleList") {
         this.$router.push({ name: "ArticleList", query: { search: value } });
         this.$router.go(0);
       }
       this.$router.push({ name: "ArticleList", query: { search: value } });
+    },
+    async tabChange(name) {
+      if (name == 1) {
+        this.categories = await this.GetCategories();
+      } else if (name == 2) {
+        this.newsList = await this.QueryNewsArticle();
+      }
+    },
+    selestArticle(name) {
+      this.$router.push({ name: "ArticleList", query: { id: name } });
+      this.$router.go(0);
+    },
+    getArticle(id) {
+      this.$router.push({ name: "ArticleInfo", query: { id } });
+      this.$router.go(0);
     },
   },
 };

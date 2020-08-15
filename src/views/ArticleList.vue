@@ -86,7 +86,6 @@ export default {
     Footer,
   },
   async created() {
-    await this.GetCategories();
     await this.GetArticles();
   },
   data: () => ({
@@ -100,7 +99,7 @@ export default {
     newsList: "",
   }),
   methods: {
-    ...mapActions(["QueryNewsArticle"]),
+    ...mapActions(["QueryNewsArticle", "GetCategories"]),
     DateHanler(oldtime) {
       return this.dateHandle(oldtime);
     },
@@ -111,16 +110,7 @@ export default {
       this.$router.push({ name: "ArticleList", query: { id: dd } });
       this.$router.go(0);
     },
-    async GetCategories() {
-      await axios
-        .get("api/articleCategory?isRemove=false")
-        .then((res) => {
-          this.categories = res.data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
+
     async GetArticles() {
       const search = this.$route.query.search;
       const id = this.$route.query.id;
@@ -154,8 +144,6 @@ export default {
         .get(url)
         .then((res) => {
           this.articlesData = res.data.values;
-          console.log(res.data.links);
-
           let links = res.data.links;
 
           if (links.length == 1) {
@@ -169,6 +157,7 @@ export default {
           console.log(err.response);
         });
       this.newsList = await this.QueryNewsArticle();
+      this.categories = await this.GetCategories();
       this.$Loading.finish();
     },
     PageData(flag) {
