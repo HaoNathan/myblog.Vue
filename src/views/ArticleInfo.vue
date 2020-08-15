@@ -90,10 +90,10 @@
                 </ListItem>
                 <ListItem v-for="item in comments">
                   <ListItemMeta
-                    :title="item.userName "
-                    :description="timeHandler(item.createTime)"
+                    :title="item.UserName "
+                    :description="timeHandler(item.CreateTime)"
                   />
-                  <div :style="{width:'80%'}">{{ item.message }}</div>
+                  <div :style="{width:'80%'}">{{ item.Message }}</div>
                 </ListItem>
               </List>
             </Card>

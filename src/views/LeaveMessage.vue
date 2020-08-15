@@ -52,9 +52,9 @@
             :style="{padding:'20px 40px 20px 0px'}"
           >
             <Card :style="{width:'100%',fontFamily:'PingFang SC'}">
-              <p :style="{fontSize:'16px',fontFamily:'等线',fontWeight:'bold'}">{{item.userName}}</p>
-              <p :style="{color:'gray',fontSize:'14px'}">{{item.message}}</p>
-              <p :style="{color:'lightGray',fontSize:'13px'}">{{removeT(item.createTime)}}</p>
+              <p :style="{fontSize:'16px',fontFamily:'等线',fontWeight:'bold'}">{{item.UserName}}</p>
+              <p :style="{color:'gray',fontSize:'14px'}">{{item.Message}}</p>
+              <p :style="{color:'lightGray',fontSize:'13px'}">{{removeT(item.CreateTime)}}</p>
             </Card>
           </Col>
         </Row>
@@ -105,7 +105,7 @@ export default {
   methods: {
     async GetLeaveMeassage() {
       await axios
-        .get("api/leaveMessage")
+        .get("api/leaveMessage?isAll=true")
         .then((res) => {
           this.messages = res.data;
         })

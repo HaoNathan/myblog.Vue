@@ -38,6 +38,20 @@ const routes = [{
         requireAuth: true
       },
       component: () => import('@/views/AddArticle.vue')
+    }, {
+      path: '/leaveMessages',
+      name: 'LeaveMessages',
+      meta: {
+        requireAuth: true
+      },
+      component: () => import('@/views/LeaveMessageTable.vue')
+    }, {
+      path: '/articleComment',
+      name: 'ArticleComment',
+      meta: {
+        requireAuth: true
+      },
+      component: () => import('@/views/ArticleCommentTable.vue')
     }]
   },
   {

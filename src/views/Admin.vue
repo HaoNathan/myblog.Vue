@@ -30,7 +30,7 @@
     <Layout>
       <Header :style="{position: 'fixed', width: '100%' ,backgroundColor:'white'}">
         <Menu mode="horizontal" theme="light" active-name="1">
-          <div class="layout-nav">
+          <div class="layout-nav" :style="{width:'55%'}">
             <MenuItem name="1">
               <Icon type="ios-keypad"></Icon>
               <router-link to="/articleTable">管理文章</router-link>
@@ -39,12 +39,15 @@
               <Icon type="ios-navigate"></Icon>
               <router-link :to="{name:'AddArticle'}">添加文章</router-link>
             </MenuItem>
-
             <MenuItem name="3">
               <Icon type="ios-paper"></Icon>
-              <router-link to="/">墙</router-link>
+              <router-link :to="{name:'LeaveMessages'}">留言墙</router-link>
             </MenuItem>
             <MenuItem name="4">
+              <Icon type="ios-paper"></Icon>
+              <router-link :to="{name:'ArticleComment'}">评论</router-link>
+            </MenuItem>
+            <MenuItem name="5">
               <Icon type="ios-analytics"></Icon>
               <router-link to="/">首页</router-link>
             </MenuItem>
